@@ -71,7 +71,8 @@ def download_archive(repo)
 end
 
 def random_archive
-  download_archive random_repo
+  repo = random_repo
+  {repo: repo.full_name, tarball: download_archive(repo)}
 end
 
 def binary?(filename)
@@ -108,7 +109,8 @@ def random_file_in_random_repo
   attempt = 1
   while attempt <= 100
     begin
-      return extract_random_file random_archive
+      repo, tarball = random_archive.values_at :repo, :tarball
+      return {repo: repo, filename: extract_random_file(tarball)}
     rescue BadExampleError => e
       STDERR.puts "Attempt ##{attempt} failed: #{e}"
       attempt += 1
@@ -179,7 +181,8 @@ def random_code_view
 
   while attempt <= 100
     begin
-      return code_view(random_file_in_random_repo)
+      repo, filename = random_file_in_random_repo.values_at :repo, :filename
+      return {repo: repo, filename: filename, html: code_view(filename)}
     rescue BadExampleError => e
       STDERR.puts "Attempt #{attempt} failed: #{e}"
       attempts += 1
@@ -191,7 +194,9 @@ end
 def go
   with_tmpdir do
     File.open('/tmp/foop.html', 'wb') do |file|
-      file.write random_code_view
+      html, repo, filename = random_code_view.values_at :html, :repo, :filename
+      puts "#{repo} - #{File.basename filename}"
+      file.write html
     end
   end
 end
