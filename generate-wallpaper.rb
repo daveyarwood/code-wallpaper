@@ -2,11 +2,13 @@
 
 gem 'httparty', '0.15.6'
 gem 'octokit', '~> 4.0'
+gem 'rouge', '3.0.0'
 gem 'ruby-filemagic', '0.7.2'
 
 require 'filemagic'
 require 'httparty'
 require 'octokit'
+require 'rouge'
 require 'tempfile'
 require 'tmpdir'
 
@@ -110,6 +112,86 @@ def random_file_in_random_repo
     rescue BadExampleError => e
       STDERR.puts "Attempt ##{attempt} failed: #{e}"
       attempt += 1
+    end
+  end
+end
+
+def format_code(filename)
+  File.open filename do |file|
+    source = file.read
+    lexer = Rouge::Lexer.guess(source: source, filename: filename)
+    formatter = Rouge::Formatters::HTML.new
+    html = formatter.format(lexer.lex(source))
+    random_theme = Rouge::Theme.registry.values.sample
+    css = random_theme.render(scope: 'body')
+    {html: html, css: css}
+  end
+rescue Rouge::Guesser::Ambiguous
+  msg = "Unable to detect filetype for syntax highlighting."
+  raise BadExampleError.new(msg)
+end
+
+# Collected manually on 12/16/17.
+$monospace_google_fonts = [
+ "Anonymous Pro",
+ "Cousine",
+ "Cutive Mono",
+ "Fira Mono",
+ "Inconsolata",
+ "Nova Mono",
+ "Overpass Mono",
+ "Oxygen Mono",
+ "PT Mono",
+ "Roboto Mono",
+ "Share Tech Mono",
+ "Source Code Pro",
+ "Space Mono",
+ "Ubuntu Mono",
+ "VT323"
+]
+
+def code_view(filename)
+  html, css = format_code(filename).values_at(:html, :css)
+  font = $monospace_google_fonts.sample
+  font_link = "https://fonts.googleapis.com/css?family=#{font.gsub ' ', '+'}"
+
+  <<~EOF
+  <!DOCTYPE html>
+  <html lang="en">
+  <head>
+  <meta charset="UTF-8">
+  <title>code view</title>
+  <link href="#{font_link}" rel="stylesheet">
+  <style type="text/css">
+  pre { font-family: '#{font}', monospace; font-size: 1.75em; }
+  #{css}
+  </style>
+  </head>
+  <body>
+    <pre>#{html}</pre>
+  </body>
+  </html>
+  EOF
+end
+
+def random_code_view
+  attempt = 1
+
+  while attempt <= 100
+    begin
+      return code_view(random_file_in_random_repo)
+    rescue BadExampleError => e
+      STDERR.puts "Attempt #{attempt} failed: #{e}"
+      attempts += 1
+    end
+  end
+end
+
+# testing
+def go
+  with_tmpdir do
+    File.open('/tmp/foop.html', 'wb') do |file|
+      file.write random_code_view
     end
   end
 end
