@@ -4,6 +4,8 @@ gem 'httparty', '0.15.6'
 gem 'octokit', '~> 4.0'
 gem 'rouge', '3.0.0'
 gem 'ruby-filemagic', '0.7.2'
+gem 'watir', '6.10.2'
+gem 'watir-scroll', '0.3.0'
 
 require 'filemagic'
 require 'httparty'
@@ -11,6 +13,8 @@ require 'octokit'
 require 'rouge'
 require 'tempfile'
 require 'tmpdir'
+require 'watir'
+require 'watir-scroll'
 
 # This script obtains a random file from a random GitHub repo. Due to the
 # entropic nature of what we're doing, a variety of things can go wrong if we
@@ -95,7 +99,10 @@ def extract_random_file(tarball)
     raise BadExampleError.new("Bad tarball.") unless $?.exitstatus.zero?
     file_path = File.join tmpdir, random_file
     if binary?(file_path)
-      STDERR.puts "Attempt ##{attempt} failed: file is binary"
+      STDERR.puts "Attempt ##{attempt} failed: File is binary."
+      attempt += 1
+    elsif file_path =~ /README|gitignore|min\.js/
+      STDERR.puts "Attempt ##{attempt} failed: File too boring."
       attempt += 1
     else
       return file_path
@@ -120,7 +127,9 @@ end
 
 def format_code(filename)
   File.open filename do |file|
+    file.sync = true
     source = file.read
+    raise BadExampleError.new("Source file is empty.") if source =~ /^\s*$/
     lexer = Rouge::Lexer.guess(source: source, filename: filename)
     formatter = Rouge::Formatters::HTML.new
     html = formatter.format(lexer.lex(source))
@@ -128,7 +137,7 @@ def format_code(filename)
     css = random_theme.render(scope: 'body')
     {html: html, css: css}
   end
-rescue Rouge::Guesser::Ambiguous
+rescue Rouge::Guesser::Ambiguous, ArgumentError
   msg = "Unable to detect filetype for syntax highlighting."
   raise BadExampleError.new(msg)
 end
@@ -165,7 +174,7 @@ def code_view(filename)
   <title>code view</title>
   <link href="#{font_link}" rel="stylesheet">
   <style type="text/css">
-  pre { font-family: '#{font}', monospace; font-size: 1.75em; }
+  pre { font-family: '#{font}', monospace; font-size: 3em; }
   #{css}
   </style>
   </head>
@@ -184,19 +193,57 @@ def random_code_view
       repo, filename = random_file_in_random_repo.values_at :repo, :filename
       return {repo: repo, filename: filename, html: code_view(filename)}
     rescue BadExampleError => e
-      STDERR.puts "Attempt #{attempt} failed: #{e}"
-      attempts += 1
+      STDERR.puts "Attempt ##{attempt} failed: #{e}"
+      attempt += 1
     end
   end
 end
 
-# testing
-def go
+def random_screenshot(in_html, out_png)
+  browser = Watir::Browser.new :chrome,
+    headless: true,
+    switches: ['--hide-scrollbars']
+  browser.goto "file://#{in_html}"
+  unless browser.title == 'code view'
+    raise "File not found: #{in_html}"
+  end
+  # Determine the screen resolution of the machine running this script.
+  width, height = `xrandr`.scan(/current (\d+) x (\d+)/).flatten.map(&:to_i)
+  # Maximize the window to fullscreen.
+  browser.window.resize_to width, height
+  # Wait until the `pre` element is rendered before taking a screenshot.
+  #
+  # NB: I tried: browser.pre.wait_until_present
+  #         and: browser.pre.wait_until {|pre| !pre.text.empty?}
+  #
+  #     but neither of these seemed to do the trick. The screenshot was still
+  #     being taken before the code was being rendered in the `pre` element. In
+  #     cases where there was a lot of code, this resulted in an empty
+  #     screenshot.
+  #
+  #     Hard-coding a sleep of 5 seconds is not an ideal solution, but it gets
+  #     the job done.
+  sleep 5
+  # Scroll down to a random position (Y coordinate) on the page.
+  x = 0
+  y = Random.rand 0..[browser.body.height / 2 - height, 0].max
+  browser.scroll.to [x, y]
+  browser.screenshot.save(out_png)
+ensure
+  browser.quit
+end
+
+if __FILE__ == $0
   with_tmpdir do
-    File.open('/tmp/foop.html', 'wb') do |file|
+    File.open(Tempfile.new('code_view_html', tmpdir), 'wb') do |file|
       html, repo, filename = random_code_view.values_at :html, :repo, :filename
-      puts "#{repo} - #{File.basename filename}"
+      timestamp = Time.now.strftime '%Y%m%d%H%M%S'
+      basename = File.basename filename
+      out_file = "#{timestamp}-#{repo}-#{basename}.png".gsub '/', '-'
+      file.sync = true
       file.write html
+      random_screenshot file.path, out_file
+      puts out_file
     end
   end
 end
