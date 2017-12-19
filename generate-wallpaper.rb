@@ -1,7 +1,7 @@
 #!/usr/bin/env ruby
 
 gem 'httparty', '0.15.6'
-gem 'octokit', '~> 4.0'
+gem 'octokit', '4.7.0'
 gem 'rouge', '3.0.0'
 gem 'ruby-filemagic', '0.7.2'
 gem 'watir', '6.10.2'
