@@ -53,8 +53,8 @@ The resulting filename includes, in order:
   <img src="https://github.com/daveyarwood/code-wallpaper/blob/master/examples/20171217213449-suprabhatgurrala-gcd-coursera-project-UCI_HAR_Tidy.csv.png?raw=true" />
 </a>
 
-<a href="https://github.com/daveyarwood/code-wallpaper/blob/master/examples/https://github.com/daveyarwood/code-wallpaper/blob/master/examples/20171217213845-ReekenX-jquery-cutetime-lt-translation-jquery.cutetime.settings.lt.js.png?raw=true">
-  <img src="20171217213845-ReekenX-jquery-cutetime-lt-translation-jquery.cutetime.settings.lt.js.png?raw=true" />
+<a href="https://github.com/daveyarwood/code-wallpaper/blob/master/examples/20171217213845-ReekenX-jquery-cutetime-lt-translation-jquery.cutetime.settings.lt.js.png?raw=true">
+  <img src="https://github.com/daveyarwood/code-wallpaper/blob/master/examples/20171217213845-ReekenX-jquery-cutetime-lt-translation-jquery.cutetime.settings.lt.js.png?raw=true" />
 </a>
 
 </center>
