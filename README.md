@@ -111,7 +111,7 @@ If you know your screen resolution, you can simply hard-code it into the script.
 
 ### Ruby
 
-This script requires Ruby 2.3+.
+This script requires Ruby 2.3+ and [Bundler](http://bundler.io/).
 
 ### Ruby libraries
 
