@@ -5,12 +5,12 @@ obtained from random files in random public GitHub repositories.
 
 ## Usage
 
-After setting up your environment so that you can run the script (see "Setup"
-below), simply run `./generate-wallpaper.rb` without arguments. The script will
-do its thing and create a PNG file in the current directory.
+After [setting up your environment](#setup) so that you can run the script,
+simply run `bundle exec generate-wallpaper.rb`. The script will do its thing and
+create a PNG file in the current directory.
 
 ```bash
-$ ./generate-wallpaper.rb 2>/dev/null
+$ bundle exec generate-wallpaper.rb 2>/dev/null
 20171217220938-giorgil2-mixico-version.rb.png
 ```
 
@@ -115,12 +115,5 @@ This script requires Ruby 2.3+.
 
 ### Ruby libraries
 
-> WIP: working on gem-ifying this so it's easier to set up.
-
-```
-gem 'httparty', '0.15.6'
-gem 'octokit', '4.7.0'
-gem 'rouge', '3.0.0'
-gem 'ruby-filemagic', '0.7.2'
-gem 'watir', '6.10.2'
-```
+Run `bundle install` to install the libraries the script depends on into
+`./vendor/bundle`.
