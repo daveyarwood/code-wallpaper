@@ -109,6 +109,18 @@ current 1920 x 1080
 
 If you know your screen resolution, you can simply hard-code it into the script.
 
+### GitHub authorization
+
+This script uses the GitHub API to fetch code from GitHub. This requires a
+personal access token, [which can be created easily](https://help.github.com/articles/creating-a-personal-access-token-for-the-command-line/) in the GitHub UI.
+
+After creating a personal access token, export it as an environment variable
+called `GITHUB_TOKEN`:
+
+```bash
+$ export GITHUB_TOKEN=paste-your-token-here
+```
+
 ### Ruby
 
 This script requires Ruby 2.3+ and [Bundler](http://bundler.io/).
