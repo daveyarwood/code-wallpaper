@@ -117,3 +117,9 @@ This script requires Ruby 2.3+.
 
 Run `bundle install` to install the libraries the script depends on into
 `./vendor/bundle`.
+
+## License
+
+Copyright © 2017 Dave Yarwood
+
+Distributed under the Eclipse Public License version 2.0.
