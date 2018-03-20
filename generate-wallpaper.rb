@@ -220,7 +220,13 @@ def random_screenshot(in_html, out_png)
   # Scroll down to a random position (Y coordinate) on the page.
   x = 0
   y = Random.rand 0..[browser.body.height / 2 - height, 0].max
-  browser.scroll.to [x, y]
+  # This used to work, but now doesn't for some reason.
+  # If it doesn't work, punt and just keep the viewport at (0, 0).
+  begin
+    browser.scroll.to [x, y]
+  rescue Selenium::WebDriver::Error::UnknownError => e
+    STDERR.puts "Unable to scroll: #{e}"
+  end
   browser.screenshot.save(out_png)
 ensure
   browser.quit
