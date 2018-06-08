@@ -228,7 +228,7 @@ end
 
 if __FILE__ == $0
   with_tmpdir do
-    File.open(Tempfile.new('code_view_html', tmpdir), 'wb') do |file|
+    File.open(Tempfile.new(['code_view', '.html'], tmpdir), 'wb') do |file|
       html, repo, filename = random_code_view.values_at :html, :repo, :filename
       timestamp = Time.now.strftime '%Y%m%d%H%M%S'
       basename = File.basename filename
