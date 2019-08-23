@@ -223,7 +223,11 @@ def random_screenshot(in_html, out_png)
   browser.scroll.to [x, y]
   browser.screenshot.save(out_png)
 ensure
-  browser.quit
+  if browser == nil
+    puts "`browser` is nil. huh?"
+  else
+    browser.quit
+  end
 end
 
 if __FILE__ == $0
