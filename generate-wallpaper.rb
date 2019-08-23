@@ -94,7 +94,7 @@ def extract_random_file(tarball)
     if binary?(file_path)
       STDERR.puts "Attempt ##{attempt} failed: File is binary."
       attempt += 1
-    elsif file_path =~ /README|gitignore|npmignore|min\.js/
+    elsif file_path =~ /README|gitignore|gitattributes|npmignore|min\.js/
       STDERR.puts "Attempt ##{attempt} failed: File too boring."
       attempt += 1
     else
