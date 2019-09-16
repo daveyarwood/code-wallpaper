@@ -1,0 +1,48 @@
+#!/usr/bin/env bash
+
+if [[ -z "$GITHUB_TOKEN" ]]; then
+  echo "GITHUB_TOKEN environment variable not set."
+  exit 1
+fi
+
+if ! which jq >/dev/null; then
+  echo "This script requires jq to be on your PATH."
+  exit 1
+fi
+
+function github_api_request() {
+  endpoint="$1"
+  shift
+
+  curl \
+    -H "Accept:application/vnd.github.v3+json" \
+    -H "Authorization: token $GITHUB_TOKEN" \
+    $* \
+    "https://api.github.com$endpoint"
+}
+
+max_attempts=10
+
+lower=1
+upper=200000000
+
+attempt=1
+
+while [[ $attempt -le $max_attempts ]]; do
+  # echo "lower: $lower; upper: $upper"
+  repo_id=$(shuf -n1 -i "$lower-$upper")
+
+  # echo -n "[attempt $attempt] Repo #$repo_id: "
+  response=$(mktemp)
+  github_api_request "/repositories/$repo_id" -s --fail > "$response"
+
+  if [[ $? -eq 0 ]]; then
+    echo "Repo #$repo_id: $(cat "$response" | jq -r .full_name)"
+    lower="$repo_id"
+    upper=$(echo "scale=0; ($lower * 1.5) / 1" | bc)
+    attempt=1
+  else
+    ((attempt++))
+  fi
+done
+
