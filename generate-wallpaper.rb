@@ -20,13 +20,20 @@ GITHUB_TOKEN = ENV['GITHUB_TOKEN'] or raise 'GITHUB_TOKEN environment variable n
 
 $github = Octokit::Client.new(:access_token => GITHUB_TOKEN)
 
-# NB: I did some exploratory testing via the GitHub API on 12/12/17 and at that
-# time, there were between 114 and 115 million GitHub repository IDs.
+# This is an approximation of the number of total GitHub repositories, obtained
+# by running a script in this repo, `bin/find-recent-github-repos`.
 #
-# That will be plenty to keep us busy for now. If we ever want to include
-# repositories created after 12/12/2017, we can test some more and determine the
-# updated count.
-MAX_REPO_ID = 114_000_000
+# The script tries to get close to the total number of repositories by fetching
+# repositories at random by ID number and stopping when it's reached numbers
+# high enough that the GitHub API is consistently returning 404.
+#
+#`generate-wallpaper.rb` will only fetch repos created through the date below.
+# We can periodically re-run `bin/find-recent-github-repos` to get a new
+# approximate repo count and update MAX_REPO_ID in order to fetch repos created
+# more recently.
+#
+# Last updated: 2019-09-16
+MAX_REPO_ID = 208_000_000
 
 def random_repo
   $github.repo rand(MAX_REPO_ID)
