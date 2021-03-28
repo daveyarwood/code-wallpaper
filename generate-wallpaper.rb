@@ -27,13 +27,13 @@ $github = Octokit::Client.new(:access_token => GITHUB_TOKEN)
 # repositories at random by ID number and stopping when it's reached numbers
 # high enough that the GitHub API is consistently returning 404.
 #
-#`generate-wallpaper.rb` will only fetch repos created through the date below.
+# `generate-wallpaper.rb` will only fetch repos created through the date below.
 # We can periodically re-run `bin/find-recent-github-repos` to get a new
 # approximate repo count and update MAX_REPO_ID in order to fetch repos created
 # more recently.
 #
-# Last updated: 2019-09-16
-MAX_REPO_ID = 208_000_000
+# Last updated: 2021-03-27
+MAX_REPO_ID = 335_000_000
 
 def random_repo
   $github.repo rand(MAX_REPO_ID)
