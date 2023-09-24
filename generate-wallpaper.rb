@@ -7,7 +7,6 @@ require 'rouge'
 require 'tempfile'
 require 'tmpdir'
 require 'watir'
-require 'watir-scroll'
 
 # This script obtains a random file from a random GitHub repo. Due to the
 # entropic nature of what we're doing, a variety of things can go wrong if we
@@ -200,9 +199,7 @@ def random_code_view
 end
 
 def random_screenshot(in_html, out_png)
-  browser = Watir::Browser.new :chrome,
-    headless: true,
-    switches: ['--hide-scrollbars']
+  browser = Watir::Browser.new :chrome, headless: true
   browser.goto "file://#{in_html}"
   unless browser.title == 'code view'
     raise "File not found: #{in_html}"
