@@ -199,7 +199,10 @@ def random_code_view
 end
 
 def random_screenshot(in_html, out_png)
-  browser = Watir::Browser.new :chrome, headless: true
+  browser = Watir::Browser.new \
+    :chrome,
+    headless: true,
+    options: { args: ['--hide-scrollbars'] }
   browser.goto "file://#{in_html}"
   unless browser.title == 'code view'
     raise "File not found: #{in_html}"
