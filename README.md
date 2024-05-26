@@ -132,6 +132,6 @@ Run `bundle install` to install the libraries the script depends on into
 
 ## License
 
-Copyright © 2017-2018 Dave Yarwood
+Copyright © 2017-2024 Dave Yarwood
 
 Distributed under the Eclipse Public License version 2.0.
