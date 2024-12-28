@@ -123,7 +123,7 @@ $ export GITHUB_TOKEN=paste-your-token-here
 
 ### Ruby
 
-This script requires Ruby 2.3+ and [Bundler](http://bundler.io/).
+This script requires Ruby >= 3.0.0 and [Bundler](http://bundler.io/).
 
 ### Ruby libraries
 
