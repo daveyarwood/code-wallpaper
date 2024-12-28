@@ -273,6 +273,13 @@ def random_screenshot(in_html, out_png)
   end
 end
 
+def add_dimensions_to_filename!(png_file)
+  width, height = IO.read(png_file)[0x10..0x18].unpack('NN')
+  new_filename = png_file.gsub('.png', "-#{width}x#{height}.png")
+  File.rename(png_file, new_filename)
+  new_filename
+end
+
 if __FILE__ == $PROGRAM_NAME
   File.open(Tempfile.new(['code_view', '.html'], TMPDIR), 'wb') do |file|
     html, repo, filename = random_code_view.values_at :html, :repo, :filename
@@ -282,6 +289,7 @@ if __FILE__ == $PROGRAM_NAME
     file.sync = true
     file.write html
     random_screenshot file.path, out_file
+    out_file = add_dimensions_to_filename!(out_file)
     puts out_file
   end
 end
