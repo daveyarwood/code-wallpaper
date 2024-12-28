@@ -17,7 +17,7 @@ function github_api_request() {
   curl \
     -H "Accept:application/vnd.github.v3+json" \
     -H "Authorization: token $GITHUB_TOKEN" \
-    $* \
+    "$@" \
     "https://api.github.com$endpoint"
 }
 
@@ -34,10 +34,8 @@ while [[ $attempt -le $max_attempts ]]; do
 
   # echo -n "[attempt $attempt] Repo #$repo_id: "
   response=$(mktemp)
-  github_api_request "/repositories/$repo_id" -s --fail > "$response"
-
-  if [[ $? -eq 0 ]]; then
-    echo "Repo #$repo_id: $(cat "$response" | jq -r .full_name)"
+  if github_api_request "/repositories/$repo_id" -s --fail > "$response"; then
+    echo "Repo #$repo_id: $(jq -r .full_name < "$response")"
     lower="$repo_id"
     upper=$(echo "scale=0; ($lower * 1.5) / 1" | bc)
     attempt=1
