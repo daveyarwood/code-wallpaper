@@ -247,7 +247,11 @@ def random_screenshot(in_html, out_png)
     width, height = xrandr_screen_resolution
 
     # Maximize the window to fullscreen.
-    browser.window.resize_to width, height
+    #
+    # 2024-12-28: This used to work as you'd expect, but for some reason, as of
+    # recently, the screenshots have all ended up being exactly 139 pixels too
+    # short. I have no idea why, but adding the 139 pixels back here fixes it.
+    browser.window.resize_to width, height + 139
 
     # Wait until the `pre` element is rendered before taking a screenshot.
     #
