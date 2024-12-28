@@ -34,8 +34,8 @@ GITHUB_CLIENT = Octokit::Client.new(access_token: GITHUB_TOKEN)
 # approximate repo count and update MAX_REPO_ID in order to fetch repos created
 # more recently.
 #
-# Last updated: 2023-09-02
-MAX_REPO_ID = 657_000_000
+# Last updated: 2024-12-28
+MAX_REPO_ID = 889_000_000
 
 def random_repo
   GITHUB_CLIENT.repo rand(MAX_REPO_ID)
