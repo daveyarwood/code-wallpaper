@@ -40,9 +40,10 @@ MAX_REPO_ID = 889_000_000
 def random_repo
   GITHUB_CLIENT.repo rand(MAX_REPO_ID)
 
-  # Some repos 404, I assume because they're private or have been deleted.
-  # When we find a missing one, we try again.
-rescue Octokit::NotFound
+  # Some repos 404, because they're private or have been deleted, and some
+  # return 403 with "Repository access blocked" (e.g. a DMCA takedown or
+  # export-control restriction). When we hit one, we try another repo.
+rescue Octokit::NotFound, Octokit::RepositoryUnavailable
   random_repo
 end
 
